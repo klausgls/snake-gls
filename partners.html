@@ -216,9 +216,6 @@
   .hand { display: flex; gap: 8px; align-items: flex-end; padding-top: 12px; flex-wrap: wrap; }
   .hand .empty { color: var(--ink-soft); font-size: 15px; padding-bottom: 36px; }
   .actions { margin-left: auto; display: flex; flex-direction: column; gap: 8px; align-items: stretch; }
-  .ranks { display: flex; gap: 4px; flex-wrap: wrap; }
-  .ranks[hidden] { display: none; }
-  .ranks button { font-size: 15px; padding: 7px 0; min-width: 38px; }
 
   .pcard {
     width: 60px;
@@ -237,11 +234,11 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
     transition: transform 0.12s, border-color 0.12s;
   }
-  .pcard .r { font-size: 19px; line-height: 1; }
-  .pcard .s { font-size: 30px; line-height: 1; text-align: center; padding-bottom: 6px; }
+  .pcard .r { font-size: 16px; line-height: 1; min-height: 16px; }
+  .pcard .s { font-size: 30px; line-height: 1; text-align: center; padding-bottom: 14px; }
+  .pcard.t-wide .s { font-size: 20px; padding-bottom: 18px; }
+  .pcard.t-swap .s { color: var(--gls-blue); font-size: 34px; }
   .pcard.red { color: var(--gls-red); }
-  .pcard.joker .r { font-size: 11px; letter-spacing: 0.5px; }
-  .pcard.joker .s { color: var(--gls-blue); }
   .pcard.live { cursor: pointer; }
   .pcard.live:hover { transform: translateY(-4px); border-color: var(--gls-blue); }
   .pcard.sel { transform: translateY(-12px); border-color: var(--gls-blue); box-shadow: 0 0 0 3px var(--gls-yellow); }
@@ -549,7 +546,6 @@
             <button class="small yellow" id="undoBtn" type="button" disabled>Undo</button>
           </div>
         </div>
-        <div class="ranks" id="ranks" hidden></div>
       </div>
     </section>
 
@@ -578,11 +574,11 @@
       <button class="yellow small" id="rulesClose" type="button">Close</button>
     </div>
     <div class="rules-body">
-      <p class="rules-lead"><b>Goal:</b> you play in a team of two. Get all 8 of your team's parcels from the depots, around the road and into your finish lanes before the other team does.</p>
+      <p class="rules-lead"><b>Goal:</b> you play in a team of two. Get all 8 of your team's parcels out of the depots, once around the road and into your finish lanes before the other team does.</p>
 
       <h3>The table</h3>
       <ul>
-        <li><b>4 players, 2 teams.</b> Partners sit opposite each other: <b>Team 1 = Red + Yellow</b>, <b>Team 2 = Green + Blue</b>. The number on each parcel's label shows its team.</li>
+        <li><b>4 players, 2 teams.</b> Partners sit opposite each other: <b>Team 1 = Red + Green</b>, <b>Team 2 = Yellow + Blue</b>. The number on each parcel's label shows its team.</li>
         <li>Each player has <b>4 parcels</b> in their <b>depot</b>.</li>
         <li>Parcels come out onto your coloured <b>start square</b> and travel <b>clockwise</b> around the road.</li>
         <li>After a full lap they turn off at the start square into your <b>finish lane</b> (the 4 coloured squares pointing to the middle).</li>
@@ -590,45 +586,45 @@
 
       <h3>A round</h3>
       <ol>
-        <li><b>Deal.</b> Everyone gets cards: 6 in the first round, then 5, 4, 3 and 2. After that the deck is shuffled and it starts again at 6.</li>
+        <li><b>Deal.</b> Everyone gets <b>4 cards</b>. The dealer shuffles once and deals 3 times in a row, and then the next player becomes dealer.</li>
         <li><b>Swap with your partner.</b> You each give your partner 1 card in secret. A card you got this way is marked <b>NEW</b>.</li>
-        <li><b>Take turns.</b> Going clockwise, each player plays <b>one card</b> and makes that move.</li>
-        <li><b>You must play if you can.</b> If none of your cards can be used, you throw away your whole hand and sit out the rest of the round.</li>
-        <li>The round ends when all cards are used. The next player becomes dealer.</li>
+        <li><b>Take turns.</b> Starting with the player after the dealer and going clockwise, each player plays <b>one card</b> and makes that move.</li>
+        <li><b>You must play if you can.</b> If none of your cards can be used, you put down your whole hand and wait for the next deal.</li>
       </ol>
 
       <h3>The cards</h3>
+      <p>Partners has its own deck of 52 cards: 13 kinds, 4 of each.</p>
       <div class="card-table">
-        <div class="card-rule special"><div class="card-face">A</div><div><b>Ace</b>Bring a parcel out, or move 1 or 14 forward.</div></div>
-        <div class="card-rule special"><div class="card-face red">K</div><div><b>King</b>Bring a parcel out, or move 13 forward.</div></div>
-        <div class="card-rule special"><div class="card-face">4</div><div><b>Four</b>Move 4 <b style="display:inline">backwards</b>.</div></div>
-        <div class="card-rule special"><div class="card-face red">7</div><div><b>Seven</b>Move 7, or split the 7 steps between two parcels (for example 3 + 4).</div></div>
-        <div class="card-rule special"><div class="card-face">8</div><div><b>Eight</b>Move 8 forward <i>or</i> backward.</div></div>
-        <div class="card-rule special"><div class="card-face red">J</div><div><b>Jack</b>Swap places between one of your parcels and any other parcel on the road.</div></div>
-        <div class="card-rule"><div class="card-face">Q</div><div><b>Queen</b>Move 12 forward.</div></div>
-        <div class="card-rule"><div class="card-face red">2–10</div><div><b>Other cards</b>Move that many squares forward (2, 3, 5, 6, 9, 10).</div></div>
-        <div class="card-rule special"><div class="card-face jk">★</div><div><b>Joker</b>Plays as any card you choose.</div></div>
+        <div class="card-rule special"><div class="card-face red">♥</div><div><b>Heart</b>Bring a parcel out of your depot onto your start square.</div></div>
+        <div class="card-rule special"><div class="card-face red">♥8</div><div><b>Heart / 8</b>Bring a parcel out, <i>or</i> move 8 forward.</div></div>
+        <div class="card-rule special"><div class="card-face red">♥13</div><div><b>Heart / 13</b>Bring a parcel out, <i>or</i> move 13 forward.</div></div>
+        <div class="card-rule special"><div class="card-face" style="font-size:16px">1/14</div><div><b>1 / 14</b>Move 1 or 14 forward.</div></div>
+        <div class="card-rule special"><div class="card-face">−4</div><div><b>Minus 4</b>Move 4 <b style="display:inline">backwards</b>. Not for parcels in the finish lane.</div></div>
+        <div class="card-rule special"><div class="card-face">7</div><div><b>Seven</b>Split 7 steps forward over as many parcels as you like. Each parcel moves once, and all 7 must be used.</div></div>
+        <div class="card-rule special"><div class="card-face jk">⇄</div><div><b>Swap</b>Swap any two parcels on the road, even if you have none out yourself.</div></div>
+        <div class="card-rule"><div class="card-face" style="font-size:15px">2–12</div><div><b>Number cards</b>Move that many forward: 2, 3, 5, 6, 9, 10 or 12.</div></div>
       </div>
-      <p>There are two decks with 4 jokers, 108 cards in all.</p>
+      <p><b>Only heart cards bring parcels out.</b> If none of your parcels are out and you have no heart, you can't move, but you can still play a Swap.</p>
 
       <h3>Rules on the road</h3>
       <ul>
-        <li><b>Knock-out:</b> land exactly on another parcel and it goes back to its depot. This works on <i>any</i> parcel, including your partner's or your own.</li>
-        <li><b>Protected start square:</b> a parcel that has just come out (drawn with a <b>ring</b>) can't be knocked out, swapped or <b>passed</b> by anyone. It blocks the road until it moves on.</li>
-        <li><b>Finish lane:</b> you need the exact count to move in. You can't jump over your own parcels in the lane, and you can't go into it backwards.</li>
-        <li><b>All your parcels home?</b> Keep playing your cards, but now you move your <b>partner's</b> parcels.</li>
+        <li><b>Knock-out:</b> land on a parcel of another colour and it goes back to its depot. This includes your partner's parcels.</li>
+        <li><b>Pairs are safe:</b> two parcels of the same colour on one square (drawn with a <b>ring</b>) protect each other. Land on them and <i>your</i> parcel goes home. Your own parcels may share a square.</li>
+        <li><b>Start square block:</b> while any of your parcels stand on your own start square, no other colour can pass or land there, not even your partner. Parcels there are ringed and can't be swapped.</li>
+        <li><b>Finish lane:</b> fill it from the inside. You can't jump over your own parcels there. If your card is too high, the parcel bounces back by the extra steps. Parcels in the lane are safe.</li>
+        <li><b>All your parcels home?</b> Keep playing your cards, but now you move your <b>partner's</b> parcels. If a 7 gets your last parcel home, the rest of the steps go to your partner.</li>
       </ul>
-      <p class="tip"><b>Tip:</b> play a <b>4</b> on a parcel that has just come out. It moves 4 squares back, to just behind its start square, and is then only 5 steps from the finish lane.</p>
-      <p class="tip"><b>Tip:</b> a parcel waiting on its start square blocks the other team, but it also blocks your partner and your own parcels coming home.</p>
+      <p class="tip"><b>Tip:</b> play <b>−4</b> on a parcel on or just after its start square. It goes 4 squares back and is suddenly almost home.</p>
+      <p class="tip"><b>Tip:</b> give your partner what they need. If they have no parcels out, a heart is worth more than any number.</p>
 
       <h3>Who wins</h3>
       <p>The first team with <b>all 8 parcels</b> in their finish lanes wins.</p>
 
       <h3>Playing on this screen</h3>
       <ol>
-        <li>Click a <b>card</b> in your hand. Greyed-out cards can't be played right now.</li>
-        <li>Click a <b>parcel</b> with a blue ring.</li>
-        <li>If there's a choice, click a <b>yellow square</b> to pick where it goes.</li>
+        <li>Click a <b>card</b> in your hand. Greyed-out cards can't be played right now. Hover over a card to see what it does.</li>
+        <li>Click a <b>parcel</b> with a blue ring (or your depot, to bring one out).</li>
+        <li>If there's a choice, click a <b>yellow square</b> to pick where it goes. With a 7, keep going until all 7 steps are used.</li>
         <li>Check the preview, then press <b>Confirm</b> (<kbd>Enter</kbd>), or <b>Undo</b> (<kbd>Backspace</kbd>) to choose again.</li>
       </ol>
       <p>With <b>hidden hands</b> and several human players, a blue screen covers the table between turns. Pass the laptop to the player it names. <kbd>M</kbd> turns the sound on or off.</p>
@@ -642,169 +638,194 @@
   'use strict';
 
   // ---------- Players ----------
-  // Seats go clockwise from the bottom. Partners sit opposite: Red + Yellow, Green + Blue.
+  // Seats go clockwise from the bottom. Partners sit opposite: Red + Green, Yellow + Blue.
   const COLORS = [
     { name: 'Red', fill: '#da202a', light: '#f8cdd0', dark: '#8f1017' },
-    { name: 'Green', fill: '#1f9d4b', light: '#c9ecd5', dark: '#0f5f2b' },
     { name: 'Yellow', fill: '#ffd100', light: '#fff0a8', dark: '#8a7000' },
+    { name: 'Green', fill: '#1f9d4b', light: '#c9ecd5', dark: '#0f5f2b' },
     { name: 'Blue', fill: '#2b6ff0', light: '#cfdcfb', dark: '#123f99' },
   ];
   const teamOf = (p) => p % 2;
   const partnerOf = (p) => (p + 2) % 4;
-  const TEAM_NAMES = ['Team 1 (Red + Yellow)', 'Team 2 (Green + Blue)'];
+  const TEAM_NAMES = ['Team 1 (Red + Green)', 'Team 2 (Yellow + Blue)'];
 
   // ---------- Cards ----------
-  const RANKS = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
-  const RANK_NAMES = { A: 'Ace', J: 'Jack', Q: 'Queen', K: 'King', JK: 'Joker' };
-  const SUITS = ['♠', '♥', '♦', '♣'];
-  const STEPS = { A: [1, 14], 2: [2], 3: [3], 4: [-4], 5: [5], 6: [6], 8: [8, -8], 9: [9], 10: [10], Q: [12], K: [13] };
-  const HAND_SIZES = [6, 5, 4, 3, 2];
-  const rankName = (r) => RANK_NAMES[r] || r;
-  const cardLabel = (c) => (c.rank === 'JK' ? 'Joker' : c.rank + c.suit);
-  const isRed = (c) => c.suit === '♥' || c.suit === '♦';
+  // The official Partners deck: 13 kinds of card, 4 of each (52 cards).
+  const number = (n) => ({ t: String(n), label: String(n), mini: String(n), corner: '', face: String(n), steps: [n], help: `Move ${n} forward.` });
+  const CARD_TYPES = [
+    { t: 'H', label: 'Heart', mini: '♥', corner: '', face: '♥', out: true, steps: [], help: 'Bring a parcel out of your depot onto your start square.' },
+    { t: 'H8', label: 'Heart / 8', mini: '♥8', corner: '♥', face: '8', out: true, steps: [8], help: 'Bring a parcel out, or move 8 forward.' },
+    { t: 'H13', label: 'Heart / 13', mini: '♥13', corner: '♥', face: '13', out: true, steps: [13], help: 'Bring a parcel out, or move 13 forward.' },
+    { t: '1/14', label: '1 / 14', mini: '1/14', corner: '', face: '1/14', steps: [1, 14], help: 'Move 1 or 14 forward.' },
+    number(2), number(3),
+    { t: '-4', label: '−4', mini: '−4', corner: '◀', face: '−4', steps: [-4], help: 'Move 4 backwards. Not for parcels in the finish lane.' },
+    number(5), number(6),
+    { t: '7', label: '7', mini: '7', corner: '✂', face: '7', steps: [], help: 'Move 7 forward in total, split over as many parcels as you like. Each parcel moves once, and all 7 steps must be used.' },
+    number(9), number(10), number(12),
+    { t: 'SW', label: 'Swap', mini: '⇄', corner: '', face: '⇄', steps: [], help: 'Swap any two parcels on the road, even when you have none out yourself.' },
+  ];
+  const TYPE = Object.fromEntries(CARD_TYPES.map((c, k) => [c.t, { ...c, order: k }]));
+  const HAND_SIZE = 4;
+  const DEALS_PER_DEALER = 3;
+  const cardLabel = (c) => TYPE[c.t].label;
+  const isRed = (c) => !!TYPE[c.t].out;
 
   function newDeck() {
     const deck = [];
     let id = 0;
-    for (let d = 0; d < 2; d++) {
-      for (const s of SUITS) for (const r of RANKS) deck.push({ rank: r, suit: s, id: id++ });
-      deck.push({ rank: 'JK', suit: '', id: id++ }, { rank: 'JK', suit: '', id: id++ });
-    }
+    for (const c of CARD_TYPES) for (let k = 0; k < 4; k++) deck.push({ t: c.t, id: id++ });
     for (let i = deck.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [deck[i], deck[j]] = [deck[j], deck[i]];
     }
     return deck;
   }
-  const rankOrder = (r) => (r === 'JK' ? 99 : RANKS.indexOf(r));
-  const sortHand = (h) => h.sort((a, b) => rankOrder(a.rank) - rankOrder(b.rank) || a.suit.localeCompare(b.suit));
+  const sortHand = (h) => h.sort((a, b) => TYPE[a.t].order - TYPE[b.t].order);
 
   // ---------- Rules ----------
   // Loop squares 0..63, 16 per seat. Each seat's start square is also where its finish lane branches off.
+  // Lane square 3 is the innermost one.
   const START = (p) => 16 * p;
   const newState = () => ({
     pieces: [0, 1, 2, 3].map(() => [0, 1, 2, 3].map((i) => ({ where: 'home', pos: i, away: false }))),
   });
   const clone = (st) => ({ pieces: st.pieces.map((a) => a.map((pc) => ({ ...pc }))) });
 
-  // A piece that has just come out is protected until it leaves its start square.
-  const isProtected = (st, p, i) => {
-    const pc = st.pieces[p][i];
-    return pc.where === 'loop' && pc.pos === START(p) && !pc.away;
-  };
-  function loopOcc(st, pos) {
+  function loopAt(st, pos) {
+    const out = [];
     for (let p = 0; p < 4; p++) for (let i = 0; i < 4; i++) {
       const pc = st.pieces[p][i];
-      if (pc.where === 'loop' && pc.pos === pos) return { p, i };
+      if (pc.where === 'loop' && pc.pos === pos) out.push({ p, i });
     }
-    return null;
+    return out;
   }
-  const laneOcc = (st, p, pos) => st.pieces[p].some((pc) => pc.where === 'lane' && pc.pos === pos);
+  const laneOcc = (st, p, pos, self = -1) => st.pieces[p].some((pc, j) => j !== self && pc.where === 'lane' && pc.pos === pos);
+  // A colour's own parcels on its own start square block every other colour, partner included.
+  const startBlocks = (st, pos, p) => {
+    if (pos % 16) return false;
+    const q = pos / 16;
+    return q !== p && st.pieces[q].some((pc) => pc.where === 'loop' && pc.pos === pos);
+  };
+  // Safe parcels: on their own start square, or two of the same colour on one square.
+  const isGuarded = (st, p, i) => {
+    const pc = st.pieces[p][i];
+    return pc.where === 'loop' && (pc.pos === START(p) || loopAt(st, pc.pos).length >= 2);
+  };
+  // A parcel is in place once every lane square inside it is filled.
+  const inPlace = (st, p, i) => {
+    const pc = st.pieces[p][i];
+    if (pc.where !== 'lane') return false;
+    for (let k = pc.pos + 1; k <= 3; k++) if (!laneOcc(st, p, k)) return false;
+    return true;
+  };
   const allDelivered = (st, p) => st.pieces[p].every((pc) => pc.where === 'lane');
   // Once your own parcels are all delivered you move your partner's.
   const moverOf = (st, seat) => (allDelivered(st, seat) ? partnerOf(seat) : seat);
   const winningTeam = (st) => [0, 1].find((t) => allDelivered(st, t) && allDelivered(st, t + 2));
 
-  // All squares a piece can reach in n steps (dir 1 forward, -1 backward), with the path taken.
+  // Where a parcel ends up after n steps (dir 1 forward, -1 backward), with the path taken, or null.
+  // Passing your start square leads into the finish lane; too high a count bounces back out of the inner end.
   function walk(st, p, i, n, dir) {
     const pc = st.pieces[p][i];
-    if (pc.where === 'home') return [];
-    const blocked = (pos) => {
-      const o = loopOcc(st, pos);
-      return o && !(o.p === p && o.i === i) && isProtected(st, o.p, o.i);
-    };
-    const out = [];
-    const rec = (cur, left, path, first) => {
-      if (left === 0) { out.push({ dest: cur, path }); return; }
+    if (pc.where === 'home') return null;
+    if (pc.where === 'lane' && (dir < 0 || inPlace(st, p, i))) return null;
+    const path = [];
+    let cur = { where: pc.where, pos: pc.pos };
+    let laneDir = 1;
+    for (let s = 0; s < n; s++) {
+      let next;
       if (cur.where === 'lane') {
-        const np = cur.pos + 1;
-        if (np > 3 || laneOcc(st, p, np)) return;
-        rec({ where: 'lane', pos: np }, left - 1, [...path, { where: 'lane', pos: np }], false);
-        return;
+        let np = cur.pos + laneDir;
+        if (laneDir > 0 && (np > 3 || laneOcc(st, p, np, i))) { laneDir = -1; np = cur.pos - 1; }
+        if (np < 0 || laneOcc(st, p, np, i)) return null;
+        next = { where: 'lane', pos: np };
+      } else if (dir > 0 && cur.pos === START(p) && (s > 0 || pc.away)) {
+        if (laneOcc(st, p, 0, i)) return null;
+        next = { where: 'lane', pos: 0 };
+      } else {
+        const np = (cur.pos + dir + 64) % 64;
+        if (startBlocks(st, np, p)) return null;
+        next = { where: 'loop', pos: np };
       }
-      // Into the finish lane from the start square, forward only, never on the very first step of a fresh piece.
-      if (dir > 0 && cur.pos === START(p) && (!first || pc.away) && !laneOcc(st, p, 0)) {
-        rec({ where: 'lane', pos: 0 }, left - 1, [...path, { where: 'lane', pos: 0 }], false);
-      }
-      const np = (cur.pos + dir + 64) % 64;
-      if (blocked(np)) return;
-      rec({ where: 'loop', pos: np }, left - 1, [...path, { where: 'loop', pos: np }], false);
-    };
-    if (pc.where === 'lane') {
-      if (dir < 0) return [];
-      rec({ where: 'lane', pos: pc.pos }, n, [], true);
-    } else {
-      rec({ where: 'loop', pos: pc.pos }, n, [], true);
+      path.push(next);
+      cur = next;
     }
-    return out;
+    return { dest: cur, path };
   }
 
-  // Moves for one card rank (7 is handled by sevenFirst/sevenSecond).
-  function movesForRank(st, seat, r) {
+  const swappable = (st) => {
+    const out = [];
+    for (let p = 0; p < 4; p++) for (let i = 0; i < 4; i++) {
+      if (st.pieces[p][i].where === 'loop' && !isGuarded(st, p, i)) out.push({ p, i });
+    }
+    return out;
+  };
+
+  // Moves for one card (the 7 is handled by sevenParts).
+  function movesForCard(st, seat, t) {
+    const T = TYPE[t];
     const o = moverOf(st, seat);
     const res = [];
-    if (r === 'A' || r === 'K') {
+    if (T.out) {
       const i = st.pieces[o].findIndex((pc) => pc.where === 'home');
-      const occ = loopOcc(st, START(o));
-      if (i >= 0 && !(occ && isProtected(st, occ.p, occ.i))) {
+      const others = loopAt(st, START(o)).filter((x) => x.p !== o);
+      if (i >= 0 && others.length < 2) {
         const dest = { where: 'loop', pos: START(o) };
         res.push({ kind: 'out', p: o, i, dest, path: [dest] });
       }
     }
-    if (r === 'J') {
-      for (let i = 0; i < 4; i++) {
-        if (st.pieces[o][i].where !== 'loop' || isProtected(st, o, i)) continue;
-        for (let q = 0; q < 4; q++) {
-          if (q === o) continue;
-          for (let j = 0; j < 4; j++) {
-            const other = st.pieces[q][j];
-            if (other.where !== 'loop' || isProtected(st, q, j)) continue;
-            res.push({ kind: 'swap', p: o, i, q, j, dest: { where: 'loop', pos: other.pos } });
-          }
-        }
+    if (t === 'SW') {
+      const list = swappable(st);
+      for (const a of list) for (const b of list) {
+        if (a.p === b.p) continue;
+        res.push({ kind: 'swap', p: a.p, i: a.i, q: b.p, j: b.i, dest: { where: 'loop', pos: st.pieces[b.p][b.i].pos } });
       }
     }
-    for (const n of STEPS[r] || []) {
+    for (const n of T.steps) {
       for (let i = 0; i < 4; i++) {
-        for (const w of walk(st, o, i, Math.abs(n), Math.sign(n))) {
-          res.push({ kind: 'step', p: o, i, dest: w.dest, path: w.path, steps: n });
-        }
+        const w = walk(st, o, i, Math.abs(n), Math.sign(n));
+        if (w) res.push({ kind: 'step', p: o, i, dest: w.dest, path: w.path, steps: n });
       }
     }
     return res;
   }
 
-  function sevenSecond(st, seat, first, rem) {
+  const afterMove = (st, m) => { const st2 = clone(st); applyMove(st2, m); return st2; };
+  const pieceKey = (p, i) => p + ':' + i;
+
+  // Can the remaining steps of a 7 still be used, moving each parcel at most once?
+  function sevenCan(st, seat, rem, used) {
+    const o = moverOf(st, seat);
+    for (let i = 0; i < 4; i++) {
+      if (used.has(pieceKey(o, i))) continue;
+      for (let k = rem; k >= 1; k--) {
+        const w = walk(st, o, i, k, 1);
+        if (!w) continue;
+        if (k === rem) return true;
+        const m = { kind: 'step', p: o, i, dest: w.dest, path: w.path, steps: k };
+        if (sevenCan(afterMove(st, m), seat, rem - k, new Set([...used, pieceKey(o, i)]))) return true;
+      }
+    }
+    return false;
+  }
+
+  // Next legal part of a 7: one unused parcel, 1..rem steps, leaving a usable remainder.
+  function sevenParts(st, seat, rem, used) {
     const o = moverOf(st, seat);
     const res = [];
     for (let i = 0; i < 4; i++) {
-      if (o === first.p && i === first.i) continue;
-      for (const w of walk(st, o, i, rem, 1)) res.push({ kind: 'step', p: o, i, dest: w.dest, path: w.path, steps: rem });
-    }
-    return res;
-  }
-
-  // First halves of a 7 that leave a legal second half (or use all 7 steps).
-  function sevenFirst(st, seat) {
-    const o = moverOf(st, seat);
-    const res = [];
-    for (let i = 0; i < 4; i++) {
-      for (let k = 1; k <= 7; k++) {
-        for (const w of walk(st, o, i, k, 1)) {
-          const m = { kind: 'step', p: o, i, dest: w.dest, path: w.path, steps: k };
-          if (k === 7) { res.push(m); continue; }
-          const st2 = clone(st);
-          applyMove(st2, m);
-          if (sevenSecond(st2, seat, m, 7 - k).length) res.push(m);
-        }
+      if (used.has(pieceKey(o, i))) continue;
+      for (let k = 1; k <= rem; k++) {
+        const w = walk(st, o, i, k, 1);
+        if (!w) continue;
+        const m = { kind: 'step', p: o, i, dest: w.dest, path: w.path, steps: k };
+        if (k === rem || sevenCan(afterMove(st, m), seat, rem - k, new Set([...used, pieceKey(o, i)]))) res.push(m);
       }
     }
     return res;
   }
 
-  const rankHasMove = (st, seat, r) => (r === '7' ? sevenFirst(st, seat).length > 0 : movesForRank(st, seat, r).length > 0);
-  const cardRanks = (c) => (c.rank === 'JK' ? RANKS : [c.rank]);
-  const canPlay = (st, seat, c) => cardRanks(c).some((r) => rankHasMove(st, seat, r));
+  const canPlay = (st, seat, c) => (c.t === '7' ? sevenCan(st, seat, 7, new Set()) : movesForCard(st, seat, c.t).length > 0);
 
   function sendHome(st, o) {
     const pc = st.pieces[o.p][o.i];
@@ -815,7 +836,7 @@
 
   function applyMove(st, m) {
     const pc = st.pieces[m.p][m.i];
-    const ev = { knocked: [], delivered: false, out: false, swap: false };
+    const ev = { knocked: [], delivered: false, out: false, swap: false, selfHome: false };
     if (m.kind === 'swap') {
       const other = st.pieces[m.q][m.j];
       [pc.pos, other.pos] = [other.pos, pc.pos];
@@ -823,12 +844,14 @@
       ev.swap = true;
       return ev;
     }
-    if (m.dest.where === 'loop') {
-      const occ = loopOcc(st, m.dest.pos);
-      if (occ && !(occ.p === m.p && occ.i === m.i)) { sendHome(st, occ); ev.knocked.push(occ); }
-    }
     ev.delivered = m.dest.where === 'lane' && pc.where !== 'lane';
     ev.out = m.kind === 'out';
+    if (m.dest.where === 'loop') {
+      const others = loopAt(st, m.dest.pos).filter((x) => x.p !== m.p);
+      // Two of another colour protect each other: the parcel that lands goes home instead.
+      if (others.length >= 2) { sendHome(st, m); ev.selfHome = true; ev.knocked.push({ p: m.p, i: m.i }); return ev; }
+      if (others.length === 1) { sendHome(st, others[0]); ev.knocked.push(others[0]); }
+    }
     pc.where = m.dest.where;
     pc.pos = m.dest.pos;
     pc.away = m.kind !== 'out';
@@ -839,7 +862,7 @@
   function pieceValue(st, p, i) {
     const pc = st.pieces[p][i];
     if (pc.where === 'home') return 0;
-    if (pc.where === 'lane') return 90 + pc.pos * 2;
+    if (pc.where === 'lane') return 90 + pc.pos * 3;
     let d = (pc.pos - START(p) + 64) % 64;
     if (d === 0 && pc.away) d = 64;
     return 15 + d * 0.9;
@@ -853,13 +876,12 @@
       for (let i = 0; i < 4; i++) {
         total += w * pieceValue(st, p, i);
         const pc = st.pieces[p][i];
-        if (pc.where !== 'loop' || isProtected(st, p, i)) continue;
-        // In reach of an opponent: 1-13 ahead of them, or 4/8 behind them.
+        if (pc.where !== 'loop' || isGuarded(st, p, i)) continue;
+        // In reach of an opponent: 1-14 ahead of them, or 4 behind them.
         const threatened = st.pieces.some((arr, q) => teamOf(q) !== teamOf(p) && arr.some((o) => {
           if (o.where !== 'loop') return false;
           const ahead = (pc.pos - o.pos + 64) % 64;
-          const behind = (o.pos - pc.pos + 64) % 64;
-          return (ahead >= 1 && ahead <= 13) || behind === 4 || behind === 8;
+          return (ahead >= 1 && ahead <= 14) || ahead === 60;
         }));
         if (threatened) total -= w * 5;
       }
@@ -871,19 +893,19 @@
     const opts = [];
     const seen = new Set();
     hand.forEach((c, idx) => {
-      if (seen.has(c.rank)) return;
-      seen.add(c.rank);
-      for (const r of cardRanks(c)) {
-        if (r === '7') {
-          for (const f of sevenFirst(st, seat)) {
-            if (f.steps === 7) { opts.push({ idx, rank: r, moves: [f] }); continue; }
-            const st2 = clone(st);
-            applyMove(st2, f);
-            for (const s of sevenSecond(st2, seat, f, 7 - f.steps)) opts.push({ idx, rank: r, moves: [f, s] });
+      if (seen.has(c.t)) return;
+      seen.add(c.t);
+      if (c.t === '7') {
+        const rec = (s, rem, used, acc) => {
+          if (opts.length > 600) return;
+          if (rem === 0) { opts.push({ idx, moves: acc }); return; }
+          for (const m of sevenParts(s, seat, rem, used)) {
+            rec(afterMove(s, m), rem - m.steps, new Set([...used, pieceKey(m.p, m.i)]), [...acc, m]);
           }
-        } else {
-          for (const m of movesForRank(st, seat, r)) opts.push({ idx, rank: r, moves: [m] });
-        }
+        };
+        rec(st, 7, new Set(), []);
+      } else {
+        for (const m of movesForCard(st, seat, c.t)) opts.push({ idx, moves: [m] });
       }
     });
     return opts;
@@ -900,7 +922,7 @@
     return out;
   }
 
-  const CARD_COST = { JK: 6, A: 2, K: 2, 7: 1 };
+  const CARD_COST = { H: 1, H8: 2, H13: 2, 7: 1, SW: 1 };
 
   function aiChoose(seat) {
     const hand = hands[seat];
@@ -918,25 +940,26 @@
     for (const o of opts) {
       const s = simulate(state, seat, o);
       const score = evaluate(s.st, seat) - before + s.delivered * 5 + s.knockedOpp * 4 - s.knockedOwn * 40
-        - (CARD_COST[hand[o.idx].rank] || 0) + Math.random() * 0.5;
+        - (CARD_COST[hand[o.idx].t] || 0) + Math.random() * 0.5;
       if (score > bestScore) { bestScore = score; best = o; }
     }
     return best;
   }
 
-  const KEEP = { JK: 10, A: 7, K: 6, 7: 5, J: 3, 4: 3, 8: 3 };
   function aiGive(seat) {
     const hand = hands[seat];
     if (cfg.level === 'easy') return Math.floor(Math.random() * hand.length);
     const homeCount = (p) => state.pieces[p].filter((pc) => pc.where === 'home').length;
-    const outCards = hand.filter((c) => c.rank === 'A' || c.rank === 'K' || c.rank === 'JK').length;
+    const hearts = hand.filter((c) => TYPE[c.t].out).length;
     const mine = moverOf(state, seat);
-    if (homeCount(partnerOf(seat)) > 0 && (homeCount(mine) === 0 || outCards >= 2)) {
-      const idx = hand.findIndex((c) => c.rank === 'A' || c.rank === 'K');
+    // A partner stuck in the depot needs a heart more than anything.
+    if (homeCount(partnerOf(seat)) > 0 && (homeCount(mine) === 0 || hearts >= 2)) {
+      const idx = hand.findIndex((c) => TYPE[c.t].out);
       if (idx >= 0) return idx;
     }
+    const keep = (c) => (TYPE[c.t].out ? (homeCount(mine) ? 8 : 3) : { 7: 6, SW: 5, '-4': 5, '1/14': 4 }[c.t] || 1);
     let best = 0;
-    hand.forEach((c, i) => { if ((KEEP[c.rank] || 1) < (KEEP[hand[best].rank] || 1)) best = i; });
+    hand.forEach((c, i) => { if (keep(c) < keep(hand[best])) best = i; });
     return best;
   }
 
@@ -970,7 +993,14 @@
   const LABEL = DEPOT_CENTER.map((d) => ({ x: d.x, y: d.y + (d.y > CY ? -54 : 54) }));
 
   const posXY = (p, where, pos) => (where === 'loop' ? LOOP[pos] : where === 'lane' ? LANE[p][pos] : DEPOT[p][pos]);
-  const pieceXY = (st, p, i) => { const pc = st.pieces[p][i]; return posXY(p, pc.where, pc.pos); };
+  // Parcels sharing a square are drawn slightly apart.
+  const pieceXY = (st, p, i) => {
+    const pc = st.pieces[p][i];
+    const q = posXY(p, pc.where, pc.pos);
+    if (pc.where !== 'loop') return q;
+    const k = st.pieces[p].slice(0, i).filter((o) => o.where === 'loop' && o.pos === pc.pos).length;
+    return k ? { x: q.x + 6 * k, y: q.y - 6 * k } : q;
+  };
 
   // ---------- Sound ----------
   let audioCtx = null;
@@ -1234,7 +1264,7 @@
     for (let p = 0; p < 4; p++) for (let i = 0; i < 4; i++) {
       if (moving.has(p + ':' + i)) continue;
       const q = pieceXY(st, p, i);
-      drawParcel(q.x, q.y, p, 1, isProtected(st, p, i));
+      drawParcel(q.x, q.y, p, 1, isGuarded(st, p, i));
     }
 
     // Highlights
@@ -1260,7 +1290,8 @@
 
     // Moving pieces
     if (anim) {
-      const f = Math.min(1, (now - anim.t0) / anim.dur);
+      // The frame timestamp can be a little older than the animation's start, so clamp to 0..1.
+      const f = Math.max(0, Math.min(1, (now - anim.t0) / anim.dur));
       for (const a of anim.list) {
         const segs = a.pts.length - 1;
         const t = f * segs;
@@ -1279,7 +1310,11 @@
   }
 
   function frame(now) {
-    render(now);
+    try {
+      render(now);
+    } catch (e) {
+      console.error(e);
+    }
     requestAnimationFrame(frame);
   }
 
@@ -1301,28 +1336,15 @@
 
   // ---------- HUD, hand and table ----------
   function renderHud() {
-    $('hudRound').textContent = running ? `${roundIdx + 1} · ${HAND_SIZES[roundIdx % 5]} cards` : '–';
+    $('hudRound').textContent = running ? `${roundIdx + 1} · deal ${(roundIdx % DEALS_PER_DEALER) + 1} of ${DEALS_PER_DEALER}` : '–';
     $('hudDealer').textContent = running ? COLORS[dealer].name : '–';
     $('hudTurn').textContent = running && turnSeat !== null ? `${COLORS[turnSeat].name} (${seatTag(turnSeat)})` : '–';
   }
 
-  const CARD_HELP = {
-    A: 'Bring a parcel out, or move 1 or 14 forward.',
-    K: 'Bring a parcel out, or move 13 forward.',
-    4: 'Move 4 backwards.',
-    7: 'Move 7 forward, or split the 7 steps between two parcels.',
-    8: 'Move 8 forward or backward.',
-    J: 'Swap places between one of your parcels and any other parcel on the road.',
-    Q: 'Move 12 forward.',
-    JK: 'Plays as any card you choose.',
-  };
-  const cardHelp = (r) => CARD_HELP[r] || `Move ${r} forward.`;
-  const SUIT_NAMES = { '♠': 'spades', '♥': 'hearts', '♦': 'diamonds', '♣': 'clubs' };
-
   const tip = $('cardTip');
   function showTip(el, c, note) {
-    const title = c.rank === 'JK' ? 'Joker ★' : `${rankName(c.rank)} of ${SUIT_NAMES[c.suit]} ${c.suit}`;
-    tip.innerHTML = `<b>${title}</b>${cardHelp(c.rank)}${note ? `<span class="note">${note}</span>` : ''}`;
+    const T = TYPE[c.t];
+    tip.innerHTML = `<b>${T.label}</b>${T.help}${note ? `<span class="note">${note}</span>` : ''}`;
     tip.hidden = false;
     const r = el.getBoundingClientRect();
     const w = tip.offsetWidth, h = tip.offsetHeight;
@@ -1340,13 +1362,14 @@
       el.innerHTML = '<div class="r">GLS<span>.</span></div>';
       return el;
     }
-    el.className = `pcard ${isRed(c) ? 'red' : ''} ${c.rank === 'JK' ? 'joker' : ''} ${c.fresh ? 'fresh' : ''} ${cls}`;
+    const T = TYPE[c.t];
+    el.className = `pcard t-${c.t === '1/14' ? 'wide' : c.t === 'SW' ? 'swap' : 'n'} ${isRed(c) ? 'red' : ''} ${c.fresh ? 'fresh' : ''} ${cls}`;
     const r = document.createElement('div');
     r.className = 'r';
-    r.textContent = c.rank === 'JK' ? 'JOKER' : c.rank;
+    r.textContent = T.corner;
     const s = document.createElement('div');
     s.className = 's';
-    s.textContent = c.rank === 'JK' ? '★' : c.suit;
+    s.textContent = T.face;
     el.append(r, s);
     return el;
   }
@@ -1366,16 +1389,18 @@
     const forPartner = moverOf(state, ui.seat) !== ui.seat ? ` You're moving <b>${partner}'s</b> parcels.` : '';
     switch (ui.stage) {
       case 'card': return `<b>${COLORS[ui.seat].name}, your turn:</b> pick a card.${ui.playable.some((x) => !x) ? ' Greyed-out cards can\'t be played now.' : ''}${forPartner}`;
-      case 'rank': return '<b>Joker:</b> choose which card it plays as.';
-      case 'piece':
-        if (ui.rank === '7') return ui.part1 ? `Move another parcel the remaining <b>${7 - ui.part1.steps}</b> steps.` : '<b>7:</b> pick a parcel. You can split the 7 steps between two parcels.' + forPartner;
-        if (ui.rank === 'J') return '<b>Jack:</b> pick your parcel, then the parcel to swap with.' + forPartner;
-        if (ui.rank === 'A') return '<b>Ace:</b> bring a parcel out, or move 1 or 14.' + forPartner;
-        if (ui.rank === 'K') return '<b>King:</b> bring a parcel out, or move 13.' + forPartner;
-        if (ui.rank === '8') return '<b>8:</b> move 8 forward or backward. Pick a parcel.' + forPartner;
-        if (ui.rank === '4') return '<b>4:</b> move 4 backwards. Pick a parcel.' + forPartner;
-        return `<b>${rankName(ui.rank)}:</b> move ${STEPS[ui.rank][0]}. Pick a parcel.` + forPartner;
-      case 'dest': return ui.rank === 'J' ? 'Pick the parcel to swap with.' : 'Pick where it goes.';
+      case 'piece': {
+        const T = TYPE[ui.type];
+        if (ui.type === '7') {
+          return ui.parts.length
+            ? `<b>7:</b> <b>${ui.rem}</b> of 7 steps left. Pick another parcel.`
+            : '<b>7:</b> pick a parcel, then how far it goes. Split the 7 steps over as many parcels as you like.' + forPartner;
+        }
+        if (ui.type === 'SW') return '<b>Swap:</b> pick a parcel, then the parcel to swap it with.';
+        if (ui.type === 'H') return '<b>Heart:</b> click your depot to bring a parcel out.' + forPartner;
+        return `<b>${T.label}:</b> ${T.help.charAt(0).toLowerCase() + T.help.slice(1, -1)}. Pick a parcel.` + forPartner;
+      }
+      case 'dest': return ui.type === 'SW' ? 'Pick the parcel to swap with.' : 'Pick where it goes.';
       case 'ready': return 'Press <b>Confirm</b> (Enter) to play this, or <b>Undo</b>.';
     }
     return '';
@@ -1424,20 +1449,6 @@
     $('confirmBtn').disabled = !(ui && ((ui.mode === 'swap' && ui.card !== null) || ui.stage === 'ready'));
     $('undoBtn').disabled = !(ui && ui.card !== null);
 
-    const ranks = $('ranks');
-    ranks.hidden = !(ui && ui.stage === 'rank');
-    if (!ranks.hidden) {
-      ranks.innerHTML = '';
-      for (const r of RANKS) {
-        const b = document.createElement('button');
-        b.type = 'button';
-        b.textContent = r;
-        b.title = rankName(r);
-        b.disabled = !rankHasMove(state, ui.seat, r);
-        b.addEventListener('click', () => pickRank(r));
-        ranks.append(b);
-      }
-    }
   }
 
   function renderSeats() {
@@ -1461,7 +1472,7 @@
           const m = document.createElement('span');
           if (handVisible(p)) {
             m.className = 'mini' + (isRed(card) ? ' red' : '');
-            m.textContent = card.rank === 'JK' ? '★' : card.rank + card.suit;
+            m.textContent = TYPE[card.t].mini;
           } else {
             m.className = 'mini back';
             m.innerHTML = '<span>·</span>';
@@ -1488,15 +1499,14 @@
     if (ui.card === idx) { resetUi(); return; }
     resetUi();
     ui.card = idx;
-    const c = hands[ui.seat][idx];
-    if (c.rank === 'JK') ui.stage = 'rank';
-    else pickRank(c.rank);
-    renderAll();
-  }
-
-  function pickRank(r) {
-    ui.rank = r;
-    ui.moves = r === '7' ? sevenFirst(state, ui.seat) : movesForRank(state, ui.seat, r);
+    ui.type = hands[ui.seat][idx].t;
+    if (ui.type === '7') {
+      ui.rem = 7;
+      ui.used = new Set();
+      ui.moves = sevenParts(state, ui.seat, 7, ui.used);
+    } else {
+      ui.moves = movesForCard(state, ui.seat, ui.type);
+    }
     ui.stage = 'piece';
     renderAll();
   }
@@ -1510,33 +1520,37 @@
   }
 
   function pickMove(m) {
-    if (ui.rank === '7' && !ui.part1 && m.steps < 7) {
-      ui.part1 = m;
-      ui.preview = clone(state);
-      applyMove(ui.preview, m);
-      ui.moves = sevenSecond(ui.preview, ui.seat, m, 7 - m.steps);
-      ui.stage = 'piece';
-      ui.pieceKey = null;
-      renderAll();
-      return;
+    if (ui.type === '7') {
+      ui.parts.push(m);
+      ui.preview = afterMove(ui.preview || state, m);
+      ui.rem -= m.steps;
+      ui.used.add(pieceKey(m.p, m.i));
+      if (ui.rem > 0) {
+        ui.moves = sevenParts(ui.preview, ui.seat, ui.rem, ui.used);
+        ui.stage = 'piece';
+        ui.pieceKey = null;
+        renderAll();
+        return;
+      }
+      ui.pending = ui.parts;
+    } else {
+      ui.pending = [m];
+      ui.preview = afterMove(state, m);
     }
-    ui.pending = ui.part1 ? [ui.part1, m] : [m];
-    ui.preview = clone(state);
-    ui.pending.forEach((x) => applyMove(ui.preview, x));
     ui.stage = 'ready';
     renderAll();
   }
 
   function resetUi() {
     if (!ui) return;
-    Object.assign(ui, { card: null, rank: null, stage: 'card', moves: [], pieceKey: null, part1: null, preview: null, pending: null });
+    Object.assign(ui, { card: null, type: null, stage: 'card', moves: [], pieceKey: null, parts: [], rem: 0, used: null, preview: null, pending: null });
     renderAll();
   }
 
   function confirm() {
     if (!ui) return;
     if (ui.mode === 'swap' && ui.card !== null) { const r = ui.resolve; r(ui.card); return; }
-    if (ui.stage === 'ready') { const r = ui.resolve; r({ idx: ui.card, rank: ui.rank, moves: ui.pending }); }
+    if (ui.stage === 'ready') { const r = ui.resolve; r({ idx: ui.card, moves: ui.pending }); }
   }
 
   function boardPoint(e) {
@@ -1565,7 +1579,7 @@
   $('undoBtn').addEventListener('click', () => { if (ui && ui.mode === 'swap') { ui.card = null; renderAll(); } else resetUi(); });
 
   const waitHuman = (seat, mode, extra = {}) => new Promise((resolve) => {
-    ui = { seat, mode, resolve, card: null, rank: null, stage: 'card', moves: [], pieceKey: null, part1: null, preview: null, pending: null, playable: [], ...extra };
+    ui = { seat, mode, resolve, card: null, type: null, stage: 'card', moves: [], pieceKey: null, parts: [], rem: 0, used: null, preview: null, pending: null, playable: [], ...extra };
     renderAll();
   });
 
@@ -1599,18 +1613,18 @@
   const conceal = () => { if (cfg.hands === 'hidden' && humans().length > 1) viewer = null; };
 
   // ---------- Game flow ----------
-  function describe(seat, card, rank, moves, evs) {
+  function describe(seat, card, moves, evs) {
     const parts = [];
-    const asJoker = card.rank === 'JK' ? ` (as ${rankName(rank)})` : '';
     moves.forEach((m, k) => {
       const who = m.p === seat ? '' : `${COLORS[m.p].name}'s `;
       if (m.kind === 'out') parts.push(`brings ${who ? who + 'parcel' : 'a parcel'} out`);
-      else if (m.kind === 'swap') parts.push(`swaps ${who}parcel with ${COLORS[m.q].name}`);
+      else if (m.kind === 'swap') parts.push(`swaps ${COLORS[m.p].name}'s and ${COLORS[m.q].name}'s parcels`);
+      else if (evs[k].selfHome) { parts.push(`lands on a protected pair and ${who ? who + 'parcel goes' : 'goes'} home itself`); return; }
       else if (evs[k].delivered) parts.push(`delivers ${who ? who + 'parcel' : 'a parcel'}`);
       else parts.push(`moves ${who ? who + 'parcel ' : ''}${m.steps < 0 ? `back ${-m.steps}` : m.steps}`);
       for (const o of evs[k].knocked) parts.push(`knocks ${o.p === seat ? 'its own' : COLORS[o.p].name + "'s"} parcel home`);
     });
-    return `${COLORS[seat].name} plays ${cardLabel(card)}${asJoker}: ${parts.join(', ')}.`;
+    return `${COLORS[seat].name} plays ${cardLabel(card)}: ${parts.join(', ')}.`;
   }
 
   async function execute(seat, choice, animate, g) {
@@ -1629,9 +1643,10 @@
       else if (ev.out) SFX.out();
       else if (ev.swap) SFX.swap();
       else if (!animate) SFX.step();
-      if (ev.knocked.length && ev.knocked.some((o) => isHuman(o.p) && o.p !== seat)) toast(`${COLORS[seat].name} knocked ${COLORS[ev.knocked[0].p].name}'s parcel home!`);
+      if (ev.selfHome) toast(`${COLORS[m.p].name} landed on a protected pair and went home!`);
+      else if (ev.knocked.length && ev.knocked.some((o) => isHuman(o.p) && o.p !== seat)) toast(`${COLORS[seat].name} knocked ${COLORS[ev.knocked[0].p].name}'s parcel home!`);
     }
-    log(seat, describe(seat, card, choice.rank, choice.moves, evs));
+    log(seat, describe(seat, card, choice.moves, evs));
     renderAll();
     await sleep(animate ? 350 : 150, g);
   }
@@ -1693,14 +1708,15 @@
   }
 
   async function playRound(g) {
-    if (roundIdx % 5 === 0) deck = newDeck();
-    const size = HAND_SIZES[roundIdx % 5];
+    // Each dealer shuffles once and deals 4 cards each, 3 times (4 cards stay in the box).
+    const fresh = roundIdx % DEALS_PER_DEALER === 0;
+    if (fresh) deck = newDeck();
     hands = [[], [], [], []];
-    for (let k = 0; k < size; k++) for (let j = 1; j <= 4; j++) hands[(dealer + j) % 4].push(deck.pop());
+    for (let k = 0; k < HAND_SIZE; k++) for (let j = 1; j <= 4; j++) hands[(dealer + j) % 4].push(deck.pop());
     hands.forEach(sortHand);
     turnSeat = null;
     SFX.deal();
-    log(dealer, `Round ${roundIdx + 1}: ${COLORS[dealer].name} deals ${size} cards each${roundIdx % 5 === 0 ? ' from a fresh deck' : ''}.`);
+    log(dealer, `Round ${roundIdx + 1}: ${COLORS[dealer].name} deals ${HAND_SIZE} cards each${fresh ? ' from a freshly shuffled deck' : ''}.`);
     renderAll();
     await sleep(600, g);
     await swapPhase(g);
@@ -1715,8 +1731,8 @@
       }
       t = (t + 1) % 4;
     }
-    dealer = (dealer + 1) % 4;
     roundIdx++;
+    if (roundIdx % DEALS_PER_DEALER === 0) dealer = (dealer + 1) % 4;
     return undefined;
   }
 
@@ -1844,7 +1860,7 @@
   requestAnimationFrame(frame);
 
   // Exposed for testing in the console.
-  window.__partners = { get state() { return state; }, get hands() { return hands; }, cfg, set speed(v) { speed = v; }, get running() { return running; }, get roundIdx() { return roundIdx; }, LOOP, movesForRank, sevenFirst, walk, applyMove, newState, clone };
+  window.__partners = { get state() { return state; }, get hands() { return hands; }, cfg, set speed(v) { speed = v; }, get running() { return running; }, get roundIdx() { return roundIdx; }, LOOP, movesForCard, sevenParts, sevenCan, walk, applyMove, newState, clone };
 })();
 </script>
 </body>

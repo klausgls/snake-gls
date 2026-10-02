@@ -37,13 +37,13 @@ Classic snake for the GLS company event. You drive a GLS lorry and pick up parce
 
 ## Partners
 
-`partners.html` is Partners, the Danish Ludo variant played with cards. 4 players form 2 teams, and partners sit opposite each other: Team 1 is Red and Yellow, Team 2 is Green and Blue. Each player gets 4 parcels to deliver from their depot around the road and into their finish lane. The first team to deliver all 8 parcels wins.
+`partners.html` is Partners, the Danish Ludo variant played with cards, using the official rules and card deck by Game Inventors. 4 players form 2 teams, and partners sit opposite each other: Team 1 is Red and Green, Team 2 is Yellow and Blue. Each player gets 4 parcels to deliver from their depot around the road and into their finish lane. The first team to deliver all 8 parcels wins.
 
 - **Setup:** each seat can be Human or Computer. Computer players can be Easy or Normal. With **Hidden** hands, a handoff screen hides the table between human turns so the laptop can be passed around. This screen is skipped when only one human plays. **Open** shows every hand. There is no leaderboard.
-- **Cards** (2 decks + 4 jokers): Ace = out, or 1 or 14 · King = out, or 13 · 4 = 4 backwards · 7 = split 7 steps between two parcels · 8 = 8 forward or backward · Jack = swap with any parcel · Queen = 12 · Joker = any card · others = their value.
-- **Rounds:** players get 6, 5, 4, 3 and then 2 cards, and then the deck is reshuffled. At the start of each round, partners swap 1 card. If you can't play any card, you discard your hand for the rest of the round. Once your own parcels are delivered, you move your partner's.
-- **How to play** (on the setup screen and in the footer) opens an easy-to-read rules page you can check at any time, even mid-game.
-- **Board:** landing on a parcel knocks it home, including your partner's or your own. A parcel that has just come out (ringed) can't be knocked out, swapped or passed. Finish lanes need an exact count, and you can't jump your own parcels or move backwards into them.
+- **How to play** (on the setup screen and in the footer) opens an easy-to-read rules page you can check at any time, even mid-game. Hover over a card to see what it does.
+- **Cards** (the Partners deck, 52 cards: 13 kinds × 4): ♥ = bring a parcel out · ♥/8 and ♥/13 = out, or move 8 / 13 · 1/14 = move 1 or 14 · −4 = 4 backwards · 7 = split 7 steps over any number of parcels · Swap = swap any two parcels on the road · 2, 3, 5, 6, 9, 10, 12 = move that many. Only heart cards bring parcels out.
+- **Rounds:** everyone gets 4 cards. Each dealer shuffles once and deals 3 times, and then the next player deals. Partners swap 1 card before each deal is played. If you can't play any card, you put down your hand until the next deal. Once your own parcels are delivered, you move your partner's.
+- **Board:** landing on a single parcel of another colour (partner included) knocks it home. Two parcels of the same colour on one square are protected, so a parcel landing on them goes home itself. Parcels on their own start square block every other colour from passing and can't be swapped. Finish lanes fill from the inside, and too high a count bounces back.
 
 | Key / mouse | Action |
 | --- | --- |
