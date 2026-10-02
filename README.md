@@ -16,6 +16,25 @@ Classic snake for the GLS company event. You drive a GLS lorry and pick up parce
 | Enter or Space (game over) | Play again |
 | N (game over) | New player |
 
+## Camilla
+
+`camilla.html` is a Giana Sisters-style platformer. Use the **Snake / Camilla** switch in the header to move between the games. Camilla is red-haired and works for GLS. Run her through 3 levels (Morning round, The warehouse, Rush hour) to the GLS lorry at the end of each one.
+
+- Parcels are worth 100 points, and every 30 parcels gives an extra life. Yellow `?` boxes hold parcels, and one box per level holds the **GLS cap**.
+- With the cap, Camilla can smash bricks from below, and an owl hit costs the cap instead of a life.
+- Stomp owls for 200 points. Leftover time is added to the score at the end of each level.
+- You start with 3 lives, and each level has a checkpoint flag.
+- Camilla has its own leaderboard, separate from Snake's.
+
+| Key | Action |
+| --- | --- |
+| ← → / A D | Run |
+| ↑ / W / Space / Z | Jump (hold to jump higher) |
+| P or Esc | Pause / resume |
+| M | Mute sound |
+| Enter or Space (game over) | Play again |
+| N (game over) | New player |
+
 ## Run locally
 
 Open `index.html` directly, or serve the folder:

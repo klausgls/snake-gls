@@ -64,6 +64,10 @@
     padding: 4px 14px;
     font-size: 16px;
   }
+  nav.games { display: flex; gap: 4px; background: rgba(255, 255, 255, 0.12); padding: 4px; border-radius: 999px; }
+  nav.games a { color: var(--white); text-decoration: none; font-weight: 700; font-size: 16px; padding: 6px 16px; border-radius: 999px; }
+  nav.games a:hover { background: rgba(255, 255, 255, 0.15); }
+  nav.games a[aria-current="page"] { background: var(--gls-yellow); color: var(--ink); }
 
   main {
     flex: 1;
@@ -250,10 +254,12 @@
     padding: 8px 16px;
     font-weight: 700;
   }
-  @media (max-width: 600px) {
+  @media (max-width: 700px) {
     header { padding: 0 16px; height: 60px; }
     .wordmark { font-size: 30px; }
     header h1 { font-size: 18px; }
+    header h1 .pill { display: none; }
+    nav.games a { padding: 6px 12px; font-size: 15px; }
   }
 </style>
 </head>
@@ -264,6 +270,10 @@
 
   <header>
     <span class="wordmark" aria-label="GLS">GLS<span class="dot">.</span></span>
+    <nav class="games" aria-label="Games">
+      <a href="index.html" aria-current="page">Snake</a>
+      <a href="camilla.html">Camilla</a>
+    </nav>
     <h1>Snake <span class="pill">Company event</span></h1>
   </header>
 
