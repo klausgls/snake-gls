@@ -35,6 +35,23 @@ Classic snake for the GLS company event. You drive a GLS lorry and pick up parce
 | Enter or Space (game over) | Play again |
 | N (game over) | New player |
 
+## Partners
+
+`partners.html` is Partners, the Danish Ludo variant played with cards. 4 players form 2 teams, and partners sit opposite each other: Team 1 is Red and Yellow, Team 2 is Green and Blue. Each player gets 4 parcels to deliver from their depot around the road and into their finish lane. The first team to deliver all 8 parcels wins.
+
+- **Setup:** each seat can be Human or Computer. Computer players can be Easy or Normal. With **Hidden** hands, a handoff screen hides the table between human turns so the laptop can be passed around. This screen is skipped when only one human plays. **Open** shows every hand. There is no leaderboard.
+- **Cards** (2 decks + 4 jokers): Ace = out, or 1 or 14 · King = out, or 13 · 4 = 4 backwards · 7 = split 7 steps between two parcels · 8 = 8 forward or backward · Jack = swap with any parcel · Queen = 12 · Joker = any card · others = their value.
+- **Rounds:** players get 6, 5, 4, 3 and then 2 cards, and then the deck is reshuffled. At the start of each round, partners swap 1 card. If you can't play any card, you discard your hand for the rest of the round. Once your own parcels are delivered, you move your partner's.
+- **How to play** (on the setup screen and in the footer) opens an easy-to-read rules page you can check at any time, even mid-game.
+- **Board:** landing on a parcel knocks it home, including your partner's or your own. A parcel that has just come out (ringed) can't be knocked out, swapped or passed. Finish lanes need an exact count, and you can't jump your own parcels or move backwards into them.
+
+| Key / mouse | Action |
+| --- | --- |
+| Click card → parcel → square | Choose a move |
+| Enter | Confirm move / show cards on the handoff screen |
+| Backspace or Esc | Undo |
+| M | Mute sound |
+
 ## Run locally
 
 Open `index.html` directly, or serve the folder:
