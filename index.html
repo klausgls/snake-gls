@@ -1,0 +1,864 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GLS Snake</title>
+<style>
+  /* Palette taken from gls-group.com */
+  :root {
+    --gls-blue: #061ab1;
+    --gls-blue-hover: #04138a;
+    --gls-yellow: #ffd100;
+    --gls-yellow-hover: #f0c400;
+    --gls-sky: #c8e7f2;
+    --gls-grey-bg: #f3f5f7;
+    --gls-red: #da202a;
+    --ink: #000000;
+    --ink-soft: #595c5f;
+    --white: #ffffff;
+    --radius: 16px;
+    --font: "NewsonGLS", -apple-system, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    background: var(--gls-grey-bg);
+    color: var(--ink);
+    font-family: var(--font);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  /* Header bar like the GLS site */
+  header {
+    background: var(--gls-blue);
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 0 32px;
+    height: 72px;
+  }
+  .wordmark {
+    font-size: 38px;
+    font-weight: 900;
+    letter-spacing: -1px;
+    line-height: 1;
+  }
+  .wordmark .dot { color: var(--gls-yellow); }
+  header h1 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  header h1 .pill {
+    background: var(--gls-yellow);
+    color: var(--ink);
+    border-radius: 999px;
+    padding: 4px 14px;
+    font-size: 16px;
+  }
+
+  main {
+    flex: 1;
+    display: flex;
+    gap: 28px;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 24px 16px 16px;
+    flex-wrap: wrap;
+  }
+  .game-col { display: flex; flex-direction: column; gap: 12px; }
+  .hud {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 18px;
+    color: var(--ink-soft);
+    background: var(--white);
+    border-radius: 999px;
+    padding: 10px 22px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  }
+  .hud b { color: var(--ink); font-variant-numeric: tabular-nums; }
+  .hud .score b { color: var(--gls-blue); font-size: 22px; }
+  .board-wrap {
+    position: relative;
+    width: var(--board-size, 600px);
+    height: var(--board-size, 600px);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(6, 26, 177, 0.25);
+  }
+  canvas { display: block; width: 100%; height: 100%; }
+
+  .overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(4, 6, 8, 0.45);
+  }
+  .overlay[hidden] { display: none; }
+  .card {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 28px 28px 24px;
+    width: min(420px, 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+  }
+  .card h2 { margin: 0; font-size: 30px; font-weight: 700; }
+  .card p { margin: 0; color: var(--ink-soft); font-size: 17px; }
+
+  /* "Get ready" sits above the lorry without hiding it */
+  .overlay.ready { background: none; pointer-events: none; align-items: flex-start; padding-top: 14%; }
+  .ready-pill {
+    background: var(--white);
+    border-radius: 999px;
+    padding: 14px 28px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  }
+  .ready-pill h2 { margin: 0 0 4px; font-size: 26px; }
+  .ready-pill p { margin: 0; color: var(--ink-soft); font-size: 16px; }
+
+  .big-score { font-size: 76px; font-weight: 900; color: var(--gls-blue); line-height: 1; font-variant-numeric: tabular-nums; }
+  .badge {
+    display: inline-block;
+    background: var(--gls-yellow);
+    color: var(--ink);
+    font-weight: 700;
+    padding: 6px 16px;
+    border-radius: 999px;
+    font-size: 17px;
+  }
+
+  form.name-form { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+  label { font-size: 15px; font-weight: 700; text-align: left; }
+  input[type="text"] {
+    font: inherit;
+    font-size: 20px;
+    padding: 12px 18px;
+    border-radius: 999px;
+    border: 2px solid #b7b7b7;
+    background: var(--white);
+    color: var(--ink);
+    outline: none;
+  }
+  input[type="text"]:focus { border-color: var(--gls-blue); box-shadow: 0 0 0 3px var(--gls-sky); }
+  .error { color: var(--gls-red); font-size: 15px; min-height: 1.2em; text-align: left; padding-left: 18px; }
+
+  /* Pill buttons like the GLS site */
+  button {
+    font: inherit;
+    font-size: 18px;
+    font-weight: 700;
+    padding: 13px 28px;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    background: var(--gls-blue);
+    color: var(--white);
+    transition: background 0.15s, transform 0.08s;
+  }
+  button:hover { background: var(--gls-blue-hover); }
+  button:active { transform: scale(0.97); }
+  button:focus-visible { outline: 3px solid var(--gls-yellow); outline-offset: 2px; }
+  button:disabled { opacity: 0.5; cursor: default; }
+  button.yellow { background: var(--gls-yellow); color: var(--ink); }
+  button.yellow:hover { background: var(--gls-yellow-hover); }
+  button.yellow:focus-visible { outline-color: var(--gls-blue); }
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+
+  kbd {
+    display: inline-block;
+    min-width: 1.6em;
+    padding: 1px 6px;
+    border-radius: 6px;
+    background: var(--gls-sky);
+    font-family: inherit;
+    font-size: 0.9em;
+    font-weight: 700;
+    color: var(--gls-blue);
+  }
+  .hint { font-size: 14px !important; }
+
+  aside.leaderboard {
+    width: 340px;
+    max-width: 100%;
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    max-height: calc(var(--board-size, 600px) + 60px);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  }
+  aside h2 { margin: 0 0 2px; font-size: 26px; font-weight: 700; }
+  aside .sub { margin: 0 0 14px; color: var(--ink-soft); font-size: 14px; }
+  .lb-list { list-style: none; margin: 0; padding: 0; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 6px; }
+  .lb-list li {
+    display: grid;
+    grid-template-columns: 34px 1fr auto;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 14px;
+    border-radius: 10px;
+    font-size: 18px;
+    background: var(--gls-sky);
+  }
+  .lb-list li.me { background: var(--gls-yellow); }
+  .lb-rank { font-weight: 900; color: var(--gls-blue); font-variant-numeric: tabular-nums; }
+  .lb-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .lb-score { font-weight: 900; color: var(--gls-blue); font-variant-numeric: tabular-nums; }
+  .lb-list li.lb-empty { display: block; color: var(--ink-soft); background: var(--gls-grey-bg); }
+
+  footer {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    padding: 10px 16px 18px;
+    color: var(--ink-soft);
+    font-size: 13px;
+  }
+  .link-btn {
+    background: none;
+    padding: 0;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--ink-soft);
+    text-decoration: underline;
+  }
+  .link-btn:hover { background: none; color: var(--ink); }
+  .storage-warning {
+    background: var(--gls-red);
+    color: var(--white);
+    text-align: center;
+    padding: 8px 16px;
+    font-weight: 700;
+  }
+  @media (max-width: 600px) {
+    header { padding: 0 16px; height: 60px; }
+    .wordmark { font-size: 30px; }
+    header h1 { font-size: 18px; }
+  }
+</style>
+</head>
+<body>
+  <div class="storage-warning" id="storageWarning" hidden>
+    This browser is blocking local storage (private window?), so scores won't be saved. Open the game in a normal window.
+  </div>
+
+  <header>
+    <span class="wordmark" aria-label="GLS">GLS<span class="dot">.</span></span>
+    <h1>Snake <span class="pill">Company event</span></h1>
+  </header>
+
+  <main>
+    <section class="game-col">
+      <div class="hud">
+        <span>Player: <b id="hudName">–</b></span>
+        <span>Best: <b id="hudBest">–</b></span>
+        <span class="score">Parcels: <b id="hudScore">0</b></span>
+      </div>
+
+      <div class="board-wrap" id="boardWrap">
+        <canvas id="board"></canvas>
+
+        <!-- Start: enter name -->
+        <div class="overlay" id="startScreen">
+          <div class="card">
+            <h2>Ready to deliver?</h2>
+            <p>Pick up parcels to add trailers. Don't hit the walls or your own trailers.</p>
+            <form class="name-form" id="nameForm" autocomplete="off">
+              <label for="nameInput">Your name</label>
+              <input type="text" id="nameInput" maxlength="20" placeholder="e.g. Anna" spellcheck="false">
+              <div class="error" id="nameError"></div>
+              <button type="submit" class="yellow">Start game</button>
+            </form>
+            <p class="hint">Steer with <kbd>←</kbd> <kbd>↑</kbd> <kbd>→</kbd> <kbd>↓</kbd> or <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> · <kbd>P</kbd> pauses</p>
+          </div>
+        </div>
+
+        <!-- Ready: waiting for first key -->
+        <div class="overlay ready" id="readyScreen" hidden>
+          <div class="ready-pill">
+            <h2 id="readyTitle">Get ready!</h2>
+            <p>Press an arrow key or <kbd>Space</kbd> to go</p>
+          </div>
+        </div>
+
+        <!-- Paused -->
+        <div class="overlay" id="pauseScreen" hidden>
+          <div class="card">
+            <h2>Paused</h2>
+            <p>Press <kbd>P</kbd>, <kbd>Esc</kbd> or <kbd>Space</kbd> to continue</p>
+          </div>
+        </div>
+
+        <!-- Game over -->
+        <div class="overlay" id="overScreen" hidden>
+          <div class="card">
+            <h2>Game over</h2>
+            <div class="big-score" id="overScore">0</div>
+            <p id="overParcels">parcels delivered</p>
+            <div id="overBadge"></div>
+            <p id="overRank"></p>
+            <div class="btn-row">
+              <button type="button" class="yellow" id="againBtn">Play again</button>
+              <button type="button" id="newPlayerBtn">New player</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="leaderboard">
+      <h2>Highscores</h2>
+      <p class="sub" id="lbSub">Best score per player</p>
+      <ol class="lb-list" id="lbList"></ol>
+    </aside>
+  </main>
+
+  <footer>
+    <span>Scores are saved in this browser only.</span>
+    <button type="button" class="link-btn" id="resetBtn">Reset scores</button>
+  </footer>
+
+<script>
+(() => {
+  'use strict';
+
+  // ---------- Config ----------
+  const COLS = 20;
+  const ROWS = 20;
+  const START_TICK_MS = 130;   // lower = faster
+  const MIN_TICK_MS = 60;
+  const TICK_STEP_MS = 3;      // speed-up per parcel
+  const STORAGE_KEY = 'gls-snake-scores-v1';
+
+  const DIRS = {
+    up: { x: 0, y: -1 }, down: { x: 0, y: 1 },
+    left: { x: -1, y: 0 }, right: { x: 1, y: 0 },
+  };
+  const KEY_TO_DIR = {
+    ArrowUp: 'up', KeyW: 'up',
+    ArrowDown: 'down', KeyS: 'down',
+    ArrowLeft: 'left', KeyA: 'left',
+    ArrowRight: 'right', KeyD: 'right',
+  };
+
+  // ---------- Storage ----------
+  let storageOk = true;
+  try {
+    const probe = '__gls_probe__';
+    localStorage.setItem(probe, '1');
+    localStorage.removeItem(probe);
+  } catch {
+    storageOk = false;
+  }
+
+  // In-memory fallback so the game still works if storage is blocked.
+  let memoryScores = {};
+
+  function loadScores() {
+    if (!storageOk) return memoryScores;
+    try {
+      const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+      return data && typeof data === 'object' ? data : {};
+    } catch {
+      return {};
+    }
+  }
+
+  function saveScores(scores) {
+    if (!storageOk) { memoryScores = scores; return; }
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(scores));
+    } catch {
+      memoryScores = scores;
+    }
+  }
+
+  const keyFor = (name) => name.trim().toLowerCase();
+
+  function getBest(name) {
+    const entry = loadScores()[keyFor(name)];
+    return entry ? entry.best : null;
+  }
+
+  function recordScore(name, score) {
+    const scores = loadScores();
+    const k = keyFor(name);
+    const prev = scores[k];
+    const isNewBest = !prev || score > prev.best;
+    scores[k] = {
+      name,
+      best: isNewBest ? score : prev.best,
+      bestAt: isNewBest ? Date.now() : prev.bestAt,
+      plays: (prev ? prev.plays || 0 : 0) + 1,
+    };
+    saveScores(scores);
+    return { isNewBest, prevBest: prev ? prev.best : null, best: scores[k].best };
+  }
+
+  // Highest first; on a tie, whoever got there first ranks higher.
+  function sortedScores() {
+    return Object.entries(loadScores())
+      .map(([k, v]) => ({ key: k, ...v }))
+      .sort((a, b) => b.best - a.best || a.bestAt - b.bestAt);
+  }
+
+  // ---------- DOM ----------
+  const $ = (id) => document.getElementById(id);
+  const canvas = $('board');
+  const ctx = canvas.getContext('2d');
+  const boardWrap = $('boardWrap');
+  const screens = {
+    start: $('startScreen'), ready: $('readyScreen'),
+    pause: $('pauseScreen'), over: $('overScreen'),
+  };
+
+  // ---------- State ----------
+  let playerName = '';
+  let state = 'start'; // start | ready | playing | paused | over
+  let snake, dir, dirQueue, food, score, tickMs, lastTime, acc, rafId;
+
+  function showScreen(name) {
+    for (const [key, el] of Object.entries(screens)) el.hidden = key !== name;
+  }
+
+  // ---------- Layout ----------
+  function resize() {
+    const reserved = 240; // header, hud, footer
+    const maxByHeight = window.innerHeight - reserved;
+    const maxByWidth = window.innerWidth - 32;
+    const raw = Math.max(240, Math.min(720, maxByHeight, maxByWidth));
+    const size = Math.floor(raw / COLS) * COLS; // whole-pixel cells
+    document.documentElement.style.setProperty('--board-size', size + 'px');
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = size * dpr;
+    canvas.height = size * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    draw();
+  }
+
+  // ---------- Game logic ----------
+  function resetGame() {
+    const cy = Math.floor(ROWS / 2);
+    const cx = Math.floor(COLS / 2) - 2;
+    snake = [
+      { x: cx, y: cy }, { x: cx - 1, y: cy },
+      { x: cx - 2, y: cy }, { x: cx - 3, y: cy },
+    ];
+    dir = DIRS.right;
+    dirQueue = [];
+    score = 0;
+    tickMs = START_TICK_MS;
+    placeFood();
+    updateHud();
+  }
+
+  function placeFood() {
+    const occupied = new Set(snake.map((s) => s.x + ',' + s.y));
+    const free = [];
+    for (let y = 0; y < ROWS; y++) {
+      for (let x = 0; x < COLS; x++) {
+        if (!occupied.has(x + ',' + y)) free.push({ x, y });
+      }
+    }
+    food = free.length ? free[Math.floor(Math.random() * free.length)] : null;
+  }
+
+  function queueDirection(name) {
+    const next = DIRS[name];
+    const last = dirQueue.length ? dirQueue[dirQueue.length - 1] : dir;
+    // Ignore same direction and 180° turns.
+    if (next === last || (next.x === -last.x && next.y === -last.y)) return;
+    if (dirQueue.length < 3) dirQueue.push(next);
+  }
+
+  function step() {
+    if (dirQueue.length) dir = dirQueue.shift();
+    const head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
+
+    if (head.x < 0 || head.y < 0 || head.x >= COLS || head.y >= ROWS) return endGame();
+
+    const eating = food && head.x === food.x && head.y === food.y;
+    // The tail moves away this tick unless we're growing, so it isn't a collision.
+    const body = eating ? snake : snake.slice(0, -1);
+    if (body.some((s) => s.x === head.x && s.y === head.y)) return endGame();
+
+    snake.unshift(head);
+    if (eating) {
+      score++;
+      tickMs = Math.max(MIN_TICK_MS, tickMs - TICK_STEP_MS);
+      placeFood();
+      updateHud();
+      if (!food) return endGame(); // board full: perfect game
+    } else {
+      snake.pop();
+    }
+  }
+
+  function loop(time) {
+    if (state !== 'playing') return;
+    if (lastTime == null) lastTime = time;
+    acc += Math.min(250, time - lastTime);
+    lastTime = time;
+    while (acc >= tickMs && state === 'playing') {
+      acc -= tickMs;
+      step();
+    }
+    draw();
+    if (state === 'playing') rafId = requestAnimationFrame(loop);
+  }
+
+  function startRunning() {
+    state = 'playing';
+    showScreen(null);
+    lastTime = null;
+    acc = 0;
+    cancelAnimationFrame(rafId);
+    rafId = requestAnimationFrame(loop);
+  }
+
+  function prepareRound() {
+    resetGame();
+    state = 'ready';
+    $('readyTitle').textContent = `Get ready, ${playerName}!`;
+    showScreen('ready');
+    draw();
+  }
+
+  function pause() {
+    if (state !== 'playing') return;
+    state = 'paused';
+    cancelAnimationFrame(rafId);
+    showScreen('pause');
+  }
+
+  function resume() {
+    if (state === 'paused') startRunning();
+  }
+
+  function endGame() {
+    state = 'over';
+    cancelAnimationFrame(rafId);
+    draw();
+
+    const result = recordScore(playerName, score);
+    const ranking = sortedScores();
+    const rank = ranking.findIndex((e) => e.key === keyFor(playerName)) + 1;
+
+    $('overScore').textContent = score;
+    $('overParcels').textContent = score === 1 ? 'parcel delivered' : 'parcels delivered';
+    const badge = $('overBadge');
+    if (!food) {
+      badge.innerHTML = '<span class="badge">Perfect game! Every parcel delivered!</span>';
+    } else if (result.isNewBest && result.prevBest !== null) {
+      badge.innerHTML = `<span class="badge">New personal best! (was ${result.prevBest})</span>`;
+    } else if (result.isNewBest) {
+      badge.innerHTML = '<span class="badge">First score on the board!</span>';
+    } else {
+      badge.textContent = '';
+      badge.append(Object.assign(document.createElement('p'), { textContent: `Your best is still ${result.best}` }));
+    }
+    $('overRank').textContent = `You're #${rank} of ${ranking.length} on the leaderboard`;
+
+    updateHud();
+    renderLeaderboard();
+    showScreen('over');
+
+    // Brief lockout so a key mashed at the moment of death doesn't skip this screen.
+    const again = $('againBtn');
+    const newer = $('newPlayerBtn');
+    again.disabled = newer.disabled = true;
+    setTimeout(() => {
+      again.disabled = newer.disabled = false;
+      if (state === 'over') again.focus();
+    }, 700);
+  }
+
+  function goToStart() {
+    state = 'start';
+    cancelAnimationFrame(rafId);
+    playerName = '';
+    resetGame();
+    updateHud();
+    renderLeaderboard();
+    showScreen('start');
+    draw();
+    const input = $('nameInput');
+    input.value = '';
+    $('nameError').textContent = '';
+    setTimeout(() => input.focus(), 0);
+  }
+
+  // ---------- Rendering ----------
+  function draw() {
+    const size = canvas.width / (window.devicePixelRatio || 1);
+    const c = size / COLS;
+
+    // Board
+    ctx.fillStyle = '#061ab1';
+    ctx.fillRect(0, 0, size, size);
+    ctx.fillStyle = '#0a20bd';
+    for (let y = 0; y < ROWS; y++) {
+      for (let x = (y % 2); x < COLS; x += 2) ctx.fillRect(x * c, y * c, c, c);
+    }
+
+    if (!snake) return;
+    if (food) drawParcel(food.x * c, food.y * c, c);
+    drawSnake(c);
+  }
+
+  function drawParcel(px, py, c) {
+    const pad = c * 0.12;
+    const s = c - pad * 2;
+    const x = px + pad;
+    const y = py + pad;
+    ctx.fillStyle = '#c98f55';
+    roundRect(x, y, s, s, c * 0.12);
+    ctx.fill();
+    ctx.fillStyle = '#a8703b';
+    ctx.fillRect(x, y, s, s * 0.22); // lid shade
+    ctx.fillStyle = '#ffd100';
+    ctx.fillRect(x + s * 0.42, y, s * 0.16, s); // GLS yellow tape
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(x + s * 0.62, y + s * 0.55, s * 0.28, s * 0.25); // label
+  }
+
+  // The snake is a GLS lorry: a cab at the head, one trailer per body segment.
+  function drawSnake(c) {
+    const center = (seg) => [seg.x * c + c / 2, seg.y * c + c / 2];
+
+    // Couplings between cab and trailers, drawn underneath.
+    ctx.strokeStyle = '#2a2f45';
+    ctx.lineWidth = c * 0.14;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(...center(snake[0]));
+    for (let i = 1; i < snake.length; i++) ctx.lineTo(...center(snake[i]));
+    ctx.stroke();
+
+    // Trailers from the back forward so the cab is drawn on top.
+    for (let i = snake.length - 1; i >= 1; i--) {
+      const seg = snake[i];
+      const ahead = snake[i - 1];
+      drawRotated(seg, c, ahead.x - seg.x, ahead.y - seg.y, drawTrailer);
+    }
+    drawRotated(snake[0], c, dir.x, dir.y, drawCab);
+  }
+
+  // Draws in a local frame where +x is the direction of travel, centred on the cell.
+  function drawRotated(seg, c, fx, fy, fn) {
+    ctx.save();
+    ctx.translate(seg.x * c + c / 2, seg.y * c + c / 2);
+    ctx.rotate(Math.atan2(fy, fx));
+    fn(c);
+    ctx.restore();
+  }
+
+  function drawWheels(c, len, wid, xs) {
+    ctx.fillStyle = '#15171f';
+    const ww = c * 0.2, wh = c * 0.09;
+    for (const x of xs) {
+      ctx.fillRect(x - ww / 2, -wid / 2 - wh * 0.6, ww, wh);
+      ctx.fillRect(x - ww / 2, wid / 2 - wh * 0.4, ww, wh);
+    }
+  }
+
+  function drawTrailer(c) {
+    const len = c * 0.86, wid = c * 0.66;
+    drawWheels(c, len, wid, [-len * 0.28, len * 0.05]);
+    ctx.fillStyle = '#ffd100';
+    roundRect(-len / 2, -wid / 2, len, wid, c * 0.08);
+    ctx.fill();
+    ctx.strokeStyle = '#8a6f00';
+    ctx.lineWidth = Math.max(1, c * 0.04);
+    ctx.stroke();
+    // Blue stripe along the top edge
+    ctx.fillStyle = '#061ab1';
+    ctx.fillRect(-len / 2 + c * 0.06, -wid / 2 + c * 0.06, len - c * 0.12, wid * 0.16);
+    // "GLS" on the side; flip it when heading left so it's never upside down
+    ctx.save();
+    if (ctx.getTransform().a < -0.01) ctx.rotate(Math.PI);
+    ctx.fillStyle = '#061ab1';
+    ctx.font = `900 ${Math.round(c * 0.3)}px system-ui, sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('GLS', 0, c * 0.05);
+    ctx.restore();
+  }
+
+  function drawCab(c) {
+    const len = c * 0.84, wid = c * 0.74;
+    drawWheels(c, len, wid, [-len * 0.2, len * 0.2]);
+    // White cab so it stands out on the blue board
+    ctx.fillStyle = '#ffffff';
+    roundRect(-len / 2, -wid / 2, len, wid, c * 0.14);
+    ctx.fill();
+    ctx.strokeStyle = '#040f6b';
+    ctx.lineWidth = Math.max(1, c * 0.04);
+    ctx.stroke();
+    // Windscreen at the front
+    ctx.fillStyle = '#7fc4e6';
+    roundRect(len * 0.12, -wid * 0.36, len * 0.2, wid * 0.72, c * 0.05);
+    ctx.fill();
+    // Yellow roof stripe
+    ctx.fillStyle = '#ffd100';
+    ctx.fillRect(-len * 0.38, -wid * 0.1, len * 0.42, wid * 0.2);
+    // Headlights
+    ctx.fillStyle = '#fff6b0';
+    for (const side of [-1, 1]) {
+      ctx.beginPath();
+      ctx.arc(len / 2 - c * 0.02, side * wid * 0.32, c * 0.07, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  function roundRect(x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+  }
+
+  // ---------- HUD & leaderboard ----------
+  function updateHud() {
+    $('hudName').textContent = playerName || '–';
+    const best = playerName ? getBest(playerName) : null;
+    $('hudBest').textContent = best === null ? '–' : best;
+    $('hudScore').textContent = score || 0;
+  }
+
+  function renderLeaderboard() {
+    const list = $('lbList');
+    const entries = sortedScores();
+    list.textContent = '';
+    $('lbSub').textContent = entries.length
+      ? `Best score per player · ${entries.length} player${entries.length === 1 ? '' : 's'}`
+      : 'Best score per player';
+
+    if (!entries.length) {
+      const li = document.createElement('li');
+      li.className = 'lb-empty';
+      li.textContent = 'No scores yet. Be the first!';
+      list.append(li);
+      return;
+    }
+
+    const me = playerName ? keyFor(playerName) : null;
+    let meEl = null;
+    entries.forEach((e, i) => {
+      const li = document.createElement('li');
+      if (e.key === me) { li.classList.add('me'); meEl = li; }
+      const rank = Object.assign(document.createElement('span'), { className: 'lb-rank', textContent: i + 1 });
+      const name = Object.assign(document.createElement('span'), { className: 'lb-name', textContent: e.name, title: e.name });
+      const best = Object.assign(document.createElement('span'), { className: 'lb-score', textContent: e.best });
+      li.append(rank, name, best);
+      list.append(li);
+    });
+    if (meEl) meEl.scrollIntoView({ block: 'nearest' });
+  }
+
+  // ---------- Input ----------
+  $('nameForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = $('nameInput').value.trim().replace(/\s+/g, ' ');
+    if (!name) {
+      $('nameError').textContent = 'Please enter your name.';
+      $('nameInput').focus();
+      return;
+    }
+    playerName = name;
+    $('nameInput').blur();
+    updateHud();
+    renderLeaderboard();
+    prepareRound();
+  });
+
+  $('againBtn').addEventListener('click', () => {
+    if (state === 'over') { $('againBtn').blur(); prepareRound(); }
+  });
+  $('newPlayerBtn').addEventListener('click', () => {
+    if (state === 'over') goToStart();
+  });
+
+  $('resetBtn').addEventListener('click', () => {
+    const answer = prompt('This deletes ALL highscores in this browser.\nType RESET to confirm.');
+    if (answer && answer.trim().toUpperCase() === 'RESET') {
+      saveScores({});
+      renderLeaderboard();
+      updateHud();
+    }
+  });
+
+  window.addEventListener('keydown', (e) => {
+    const dirName = KEY_TO_DIR[e.code];
+    const isSpace = e.code === 'Space';
+    const isPause = e.code === 'KeyP' || e.code === 'Escape';
+
+    if (state === 'start') return; // let the name input work normally
+
+    if (state === 'ready') {
+      if (dirName || isSpace) {
+        e.preventDefault();
+        if (dirName && dirName !== 'left') queueDirection(dirName);
+        startRunning();
+      }
+      return;
+    }
+
+    if (state === 'playing') {
+      if (dirName) { e.preventDefault(); queueDirection(dirName); }
+      else if (isPause || isSpace) { e.preventDefault(); pause(); }
+      return;
+    }
+
+    if (state === 'paused') {
+      if (isPause || isSpace) { e.preventDefault(); resume(); }
+      return;
+    }
+
+    if (state === 'over') {
+      const ready = !$('againBtn').disabled;
+      if (e.code === 'KeyN' && ready) { e.preventDefault(); goToStart(); }
+      else if ((isSpace || e.code === 'Enter') && ready) { e.preventDefault(); prepareRound(); }
+      else if (dirName || isSpace) e.preventDefault(); // don't scroll the page
+    }
+  });
+
+  // Auto-pause if the window loses focus.
+  window.addEventListener('blur', pause);
+  document.addEventListener('visibilitychange', () => { if (document.hidden) pause(); });
+  window.addEventListener('resize', resize);
+
+  // ---------- Boot ----------
+  if (!storageOk) $('storageWarning').hidden = false;
+  resetGame();
+  resize();
+  renderLeaderboard();
+  showScreen('start');
+  $('nameInput').focus();
+})();
+</script>
+</body>
+</html>
